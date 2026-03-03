@@ -29,17 +29,16 @@ jobs:
           max-score: 5
           setup-command: 'pip install -r requirements.txt'
 
+      - name: Autograding Reporter
+        uses: education/autograding-grading-reporter@v1
+        if: always()  # <--- CRITICAL: Run this IMMEDIATELY after the tests
+        with:
+          runners: autograder
+
       - name: Gemini QA Feedback
-        # This step runs if the autograder fails OR errors out
         if: always()
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           pip install -U google-generativeai
           python .github/scripts/qa_feedback.py
-
-      - name: Autograding Reporter
-        uses: education/autograding-grading-reporter@v1
-        if: always()
-        with:
-          runners: autograder
