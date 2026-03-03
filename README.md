@@ -35,4 +35,10 @@ When you are ready to be graded, run these three commands in order:
 ```git commit -m "Finished the case study logic" ```  
 ```git push origin main```  
 
+### ✅ Submission Checklist
+- [ ] **Import Check:** Does your `student_code.py` have `import math` at the top?
+- [ ] **Formula Check:** Are you using `math.sqrt()`?
+- [ ] **Return Type:** Is your function returning a number, not a string?
+- [ ] **Final Save:** Did you save the file before your final `git commit`?
+
 💡 Pro-Tip: Your grade is not final until you "push." Once you do, go to the Actions tab on your GitHub page to see the AI feedback from Gemini!
