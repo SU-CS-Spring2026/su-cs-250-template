@@ -37,8 +37,8 @@ When you are ready to be graded, run these three commands in order:
 
 ### ✅ Submission Checklist
 - [ ] **Import Check:** Does your `student_code.py` have `import math` at the top?
-- [ ] **Formula Check:** Are you using `math.sqrt()`?
-- [ ] [**Rounding:** Have you used round(result, 2) or an f-string to clean up the long decimal?
+- [ ] **Formula Check:** Are you using `math.sqrt()`?  
+- [ ] **Rounding:** Have you used round(result, 2) or an f-string to clean up the long decimal?
 - [ ] **Return Type:** Is your function returning a number, not a string?
 - [ ] **Final Save:** Did you save the file before your final `git commit`?
 
