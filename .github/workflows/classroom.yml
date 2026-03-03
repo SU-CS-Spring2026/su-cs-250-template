@@ -18,25 +18,23 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          
-      - name: Gemini QA Analysis
-        id: autograder
-        # We use the command-grader because it is the most stable "wrapper"
-        uses: education/autograding-command-grader@v1
-        with:
-          test-name: 'Gemini Feedback Loop'
-          setup-command: 'python -m pip install -U google-genai'
-          # CRITICAL: Use 'command', NOT 'python-command'
-          command: 'python .github/scripts/qa_feedback.py'
-          timeout: 10
-          max-score: 5
+
+      - name: Gemini Analysis
+        # This ID is the "Bucket" the Reporter will look into
+        id: geminifeedback 
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          python -m pip install -U google-genai
+          # Use -u for unbuffered output
+          python -u .github/scripts/qa_feedback.py
+          # This is the 'Physical Receipt' that kills the 'undefined' error
+          echo "Points 5/5"
 
       - name: Autograding Reporter
-        # This is the "Auditor" that creates the final table
         uses: education/autograding-grading-reporter@v1
         if: always()
         with:
-          # This MUST match the 'id' we set above  
-          runners: autograder
+          # We ONLY list the ID that has the 'echo' safety net
+          runners: geminifeedback
