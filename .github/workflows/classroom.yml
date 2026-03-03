@@ -36,8 +36,9 @@ jobs:
         run: |
           python -m pip install -U google-genai
           python .github/scripts/qa_feedback.py
+          
       - name: Autograding Reporter
-        uses: education/autograding-python-grader@v1
+        uses: education/autograding-grading-reporter@v1.
         if: always()
         with:
           # Change this to geminifeedback
