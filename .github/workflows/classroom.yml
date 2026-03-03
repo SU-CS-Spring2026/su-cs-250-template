@@ -29,21 +29,19 @@ jobs:
           setup-command: ''
           
       - name: Gemini QA Feedback
-        id: geminifeedback
-        # Use command-grader for custom scripts; it's more stable for this setup
-        uses: education/autograding-command-grader@v1
         if: always()
-        with:
-          test-name: 'Gemini QA Analysis'
-          setup-command: 'python -m pip install -U google-genai'
-          # This command is the 'Source of Truth' for the reporter
-          command: 'python .github/scripts/qa_feedback.py'
-          timeout: 10
-          max-score: 5
+        # We REMOVE the "id" here so the Reporter doesn't try to "score" it.
+        # This is the secret to stopping the "undefined" crash.
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python -m pip install -U google-genai
+          python .github/scripts/qa_feedback.py
 
       - name: Autograding Reporter
         uses: education/autograding-grading-reporter@v1
         if: always()
         with:
-          # Only list the runner that we know is producing a result
-          runners: geminifeedback
+          # ONLY list the 'autograder' (your first step).
+          # As long as the autograder has ONE test, this will stay Green.
+          runners: autograder
