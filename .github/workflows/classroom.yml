@@ -26,25 +26,26 @@ jobs:
           test-name: 'Gemini Analysis'
           setup-command: 'pip install -r requirements.txt'
           command: |
-            # 1. Run the script and capture all output
+            # 1. Run the script and capture the output
             OUTPUT=$(GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py)
-            
-            # 2. Print the output to the log so you can still see it
             echo "$OUTPUT"
             
-            # 3. Extract the score and write it to the modern $GITHUB_OUTPUT file
+            # 2. Extract score and write to modern $GITHUB_OUTPUT
             SCORE=$(echo "$OUTPUT" | grep -oP '(?<=<score>).*(?=</score>)')
             echo "score=$SCORE" >> $GITHUB_OUTPUT
+            
+            # 3. Save the full result for the Filter step
+            echo "result<<EOF" >> $GITHUB_OUTPUT
+            echo "$OUTPUT" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           timeout: 30
           max-score: 5
 
       - name: Filter Feedback
         id: filter
         run: |
-          # Use sed to grab everything between the DATA markers
+          # Extract only the encouraging notes for the student
           FEEDBACK=$(echo "${{ steps.gqastep.outputs.result }}" | sed -n '/### DATA_START/,/### DATA_END/p' | sed '1d;$d')
-          
-          # This saves it so the next step can see it
           echo "clean_msg<<EOF" >> $GITHUB_OUTPUT
           echo "$FEEDBACK" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -53,13 +54,13 @@ jobs:
         uses: mshick/add-pr-comment@v2
         with:
           message-id: gemini-feedback
-          # Now we use the clean output from the filter step
           message: "${{ steps.filter.outputs.clean_msg }}"
           allow-repeats: true
 
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
         env:
-          GQASTEP_RESULTS: "${{steps.gqastep.outputs.result}}"
+          # Handshake: Ensures the dashboard shows the real score (3/5, 4/5, etc.)
+          GQASTEP_RESULTS: "${{ steps.gqastep.outputs.score }}"
         with:
           runners: gqastep
