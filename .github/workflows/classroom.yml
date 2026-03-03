@@ -19,20 +19,23 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Autograding and Gemini
+      - name: Gemini QA Analysis
         id: autograder
-        uses: education/autograding-python-grader@v1
+        # We use the 'command-grader' because it is a reliable "wrapper."
+        uses: education/autograding-command-grader@v1
         with:
+          test-name: 'Gemini Feedback'
+          setup-command: 'python -m pip install -U google-genai'
+          # FIX: Change 'python-command' to just 'command'
+          command: 'python .github/scripts/qa_feedback.py.'
           timeout: 10
           max-score: 10
-          setup-command: 'python -m pip install -U google-genai'
-          # We run your script as the actual "test"
-          python-command: 'python .github/scripts/qa_feedback.py.'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Autograding Reporter
         uses: education/autograding-grading-reporter@v1
         if: always()
         with:
-          # By only having ONE runner that is an official 'grader' action,
-          # the "undefined" error becomes mathematically impossible.
+          # This connects to the 'id' above
           runners: autograder
