@@ -30,7 +30,7 @@ jobs:
           max-score: 5
         env:
           # VITAL: Double check this is 'vars' and not 'secrets'
-          GEMINI_API_KEY: ${{ vars.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_ACTOR: ${{ github.actor }}
 
       - name: Autograding Reporter
