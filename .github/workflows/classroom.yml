@@ -20,13 +20,11 @@ jobs:
           python-version: '3.10'
 
       - name: Gemini Analysis
-        # Ensure NO space after the 'k'
-        id: saylorqacheck
+        id: gqastep
         uses: education/autograding-command-grader@v1
         with:
           test-name: 'Gemini Analysis'
           setup-command: 'python -m pip install -U google-genai'
-          # Direct injection for maximum reliability
           command: 'GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py'
           timeout: 30
           max-score: 5
@@ -38,5 +36,4 @@ jobs:
         uses: education/autograding-grading-reporter@v1
         if: always()
         with:
-          # Must match the ID above exactly (no spaces!)
-          runners: saylorqacheck
+          runners: gqastep
