@@ -3,7 +3,7 @@ print("GEMINI SCRIPT IS NOW RUNNING")
 print("*****************************************")
 
 import os
-import google.generativeai as genai
+from google import genai  # New import style
 
 # Setup Gemini (Using the Secret we added to the Organization)
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
