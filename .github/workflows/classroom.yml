@@ -25,12 +25,10 @@ jobs:
         with:
           test-name: 'Gemini Analysis'
           setup-command: 'python -m pip install -U google-genai'
-          command: 'python ./.github/scripts/qa_feedback.py'
+          # We inject the env vars directly into the command string here
+          command: 'GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py'
           timeout: 30
           max-score: 5
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_ACTOR: ${{ github.actor }}
 
       - name: Autograding Reporter
         uses: education/autograding-grading-reporter@v1
