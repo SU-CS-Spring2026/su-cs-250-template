@@ -1,4 +1,4 @@
-name: GitHub Classroom Workflow 
+name: GitHub Classroom Workflow
 on: [push, pull_request] # Simplifies triggers for all branches
 
 permissions:
@@ -29,19 +29,18 @@ jobs:
           setup-command: ''
           
       - name: Gemini QA Feedback
-        if: always()
-        # We REMOVE the "id" here so the Reporter doesn't try to "score" it.
-        # This is the secret to stopping the "undefined" crash.
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: |
-          python -m pip install -U google-genai
-          python .github/scripts/qa_feedback.py
-
-      - name: Autograding Reporter
-        uses: education/autograding-grading-reporter@v1
+        id: geminifeedback
+        uses: education/autograding-python-grader@v1
         if: always()
         with:
-          # ONLY list the 'autograder' (your first step).
-          # As long as the autograder has ONE test, this will stay Green.
-          runners: autograder
+          timeout: 10
+          max-score: 5
+          setup-command: 'python -m pip install -U google-genai'
+          python-command: 'python .github/scripts/qa_feedback.py'
+
+      - name: Autograding Reporter
+        uses: education/autograding-python-grader@v1
+        if: always()
+        with:
+          # Change this to geminifeedback
+          runners: geminifeedback
