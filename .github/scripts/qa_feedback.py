@@ -44,13 +44,23 @@ if not api_key:
 client = genai.Client(api_key=api_key)
 
 def grade_submission():
+    # FIX: Define student_id from the environment for the prompt and output
     student_id = os.getenv("GITHUB_ACTOR", "Unknown_Student")
     
-    # FIX 1: Define the filename clearly so the script knows what to run
     filename = "student_code.py" 
+    current_score = 5  # Start with a perfect score
 
-    # EXECUTION STEP: Run the code before reading the file
+    # 1. EXECUTION STEP: Run the code first to get the data
     stdout, stderr = run_student_code(filename)
+
+    # 2. QA Check: Deduct points based on captured data
+    if stderr:
+        current_score -= 2
+    elif not stdout.strip():
+        current_score -= 1
+
+    # FIX: Removed extra parenthesis from previous version
+    current_score = max(0, current_score)
     
     # Read the student's code
     try:
@@ -71,11 +81,10 @@ def grade_submission():
 
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.0-flash', # Model available for your tier
             contents=prompt
         )
         
-        # FIX 2: Apply the sanitizer to the response text here
         clean_text = sanitize_feedback(response.text)
 
         print(f"### DATA_START | STUDENT: {student_id} ###")
@@ -86,10 +95,10 @@ def grade_submission():
         print(f"Gemini API Error for {student_id}: {e}")
         sys.exit(1)
 
-    # The "Reporter" handshake
-    print("\n<score-threshold>5</score-threshold>")
-    print("<score>5</score>")
-    print("Points 5/5")
+    # 3. REPORTER HANDSHAKE: Now dynamically using current_score
+    print(f"\n<score-threshold>5</score-threshold>")
+    print(f"<score>{current_score}</score>")
+    print(f"Points {current_score}/5")
 
     # This forces the buffer to empty so the Reporter sees the string immediately
     sys.stdout.flush()
