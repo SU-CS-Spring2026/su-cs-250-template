@@ -30,6 +30,25 @@ jobs:
           timeout: 30
           max-score: 5
 
+      - name: Filter Feedback
+        id: filter
+        run: |
+          # Use sed to grab everything between the DATA markers
+          FEEDBACK=$(echo "${{ steps.gqastep.outputs.result }}" | sed -n '/### DATA_START/,/### DATA_END/p' | sed '1d;$d')
+          
+          # This saves it so the next step can see it
+          echo "clean_msg<<EOF" >> $GITHUB_OUTPUT
+          echo "$FEEDBACK" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post Feedback to PR
+        uses: mshick/add-pr-comment@v2
+        with:
+          message-id: gemini-feedback
+          # Now we use the clean output from the filter step
+          message: "${{ steps.filter.outputs.clean_msg }}"
+          allow-repeats: true
+
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
         env:
