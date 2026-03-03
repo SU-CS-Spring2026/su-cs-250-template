@@ -20,13 +20,13 @@ jobs:
           python-version: '3.10'
 
       - name: Run Gemini Analysis
-        # We use the command-grader because it is the most stable "wrapper"
-        uses: education/autograding-command-grader@v1
+        # We use the command-grader because it is the most stable "wrapper."
+        uses: education/autograding-python-grader@v1
         id: autograder
         continue-on-error: true
         with:
           test-name: 'Gemini QA Feedback'
-          setup-command: 'python -m pip install -U google-genai'
+          setup-command: 'python -m pip install -U google-genai.'
           # Use 'command', NOT 'python-command'
           command: 'python .github/scripts/qa_feedback.py'
           timeout: 10
