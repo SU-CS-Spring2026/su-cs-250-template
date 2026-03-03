@@ -24,7 +24,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: 'Gemini Analysis'
-          setup-command: 'python -m pip install -U google-genai'
+          setup-command: 'pip install -r requirements.txt'
           # We inject the env vars directly into the command string here
           command: 'GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py'
           timeout: 30
