@@ -25,12 +25,16 @@ jobs:
         with:
           test-name: 'Gemini Analysis'
           setup-command: 'pip install -r requirements.txt'
-          # THE FIX: This wrapper captures the <score> tag from your Python script
           command: |
+            # 1. Run the script and capture all output
             OUTPUT=$(GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py)
+            
+            # 2. Print the output to the log so you can still see it
             echo "$OUTPUT"
+            
+            # 3. Extract the score and write it to the modern $GITHUB_OUTPUT file
             SCORE=$(echo "$OUTPUT" | grep -oP '(?<=<score>).*(?=</score>)')
-            echo "::set-output name=score::$SCORE"
+            echo "score=$SCORE" >> $GITHUB_OUTPUT
           timeout: 30
           max-score: 5
 
