@@ -1,9 +1,5 @@
 name: GitHub Classroom Workflow
-on: 
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+on: [push, pull_request] # Simplifies triggers for all branches
 
 permissions:
   checks: write
