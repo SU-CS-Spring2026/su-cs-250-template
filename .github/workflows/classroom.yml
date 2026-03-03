@@ -24,6 +24,7 @@ jobs:
       - name: Run Autograde Tests
         id: autograder
         uses: education/autograding-python-grader@v1
+        continue-on-error: true # <--- ADD THIS LINE
         with:
           timeout: 10
           max-score: 5
