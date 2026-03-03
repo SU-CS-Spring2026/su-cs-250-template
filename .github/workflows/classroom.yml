@@ -60,7 +60,7 @@ jobs:
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
         env:
-          # Handshake: Ensures the dashboard shows the real score (3/5, 4/5, etc.)
-          GQASTEP_RESULTS: "${{ steps.gqastep.outputs.score }}"
+          # THE FIX: Construct the JSON string the reporter expects
+          GQASTEP_RESULTS: '{"totalPoints":${{ steps.gqastep.outputs.score }},"maxPoints":5}'
         with:
           runners: gqastep
