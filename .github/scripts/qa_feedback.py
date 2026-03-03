@@ -14,25 +14,18 @@ def grade_submission():
         print("Error: student_code.py not found.")
         return
 
-    # The Prompt for the AI - Specific to calculate_radius
-    prompt = f"""
-    You are a Student TA Grader for a CS250  Python course. 
+prompt = f"""
+    You are a QA Reviewer for an MBA Python course. 
     The student is working on a 'calculate_radius' function (where Area = pi * r^2).
     
     The student's code failed the automated tests. 
     Review the code below and provide a concise, encouraging hint. 
-    
-    Common pitfalls to check for:
-    1. Forgetting to import the 'math' library.
-    2. Using an incorrect formula (e.g., forgetting to square the radius).
-    3. Returning the wrong data type (string instead of float).
 
     Student Code:
     {student_code}
-    """}
-    """
+    """  # <--- Make sure there is NO '}' after these quotes
 
-    # Generate and print feedback (this will appear in the GitHub Action logs)
+    # Generate and print feedback
     response = model.generate_content(prompt)
     print("\n--- QA FEEDBACK FROM GEMINI ---")
     print(response.text)
