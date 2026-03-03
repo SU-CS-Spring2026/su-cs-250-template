@@ -1,34 +1,28 @@
 name: GitHub Classroom Workflow
 on: [push]
+
 permissions:
   checks: write
-  actions: read
-  contents: write
+  actions: write
+  contents: read
 
 jobs:
   build:
     name: Autograding
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Run Autograde Tests
-        id: autograder
-        uses: education/autograding-python-grader@v1
-        continue-on-error: true
-        with:
-          timeout: 10
-          max-score: 5
-          setup-command: 'pip install -r requirements.txt'
+      # Add your Python testing or feedback script execution here
+      - name: Run Autograder
+        run: |
+          python3 .github/scripts/grading_script.py
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Autograding Reporter
-        uses: education/autograding-grading-reporter@v1
-        if: always()
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          ANY_REQUIRED_ENV_VAR: ${{ secrets.ANY_REQUIRED_ENV_VAR }}
         with:
           runners: autograder
