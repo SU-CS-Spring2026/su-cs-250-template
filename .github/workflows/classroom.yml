@@ -40,7 +40,8 @@ jobs:
 
       - name: Autograding Reporter
         uses: education/autograding-grading-reporter@v1
+        if: always() # <--- This forces the reporter to report a 0 instead of crashing
         env:
-          ANY_STEP_FAILURE: ${{ steps.autograder.outcome }}
+          ANY_REQUIRED_ENV_VAR: ${{ secrets.ANY_REQUIRED_ENV_VAR }}
         with:
           runners: autograder
