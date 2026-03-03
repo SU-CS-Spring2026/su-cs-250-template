@@ -20,9 +20,10 @@ def grade_submission():
 
     # The Prompt for the AI
     prompt = f"""
-    You are a QA Reviewer for an MBA Python course. 
+    You are a QA Reviewer for the CS250 Python course. 
     The student is working on a 'calculate_radius' function.
-    The student's code failed the tests. Review this code:
+    The student's code failed the tests. Identify the error without giving them the final code. 
+    Review this code:
     {student_code}
     """
 
