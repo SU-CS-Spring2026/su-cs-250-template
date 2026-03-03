@@ -1,4 +1,4 @@
-name: GitHub Classroom Workflow
+name: GitHub Classroom Workflow 
 on: [push, pull_request] # Simplifies triggers for all branches
 
 permissions:
