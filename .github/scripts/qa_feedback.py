@@ -32,7 +32,7 @@ def run_student_code(file_path):
     except Exception as e:
         return "", str(e)
         
-# The script looks for the name you used in the 'env:' section of your YAML
+# The script looks for the name you used in the 'env:' section of your YAML 
 api_key = os.getenv("GEMINI_API_KEY")
 
 if not api_key:
