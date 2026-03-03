@@ -26,15 +26,13 @@ jobs:
         with:
           timeout: 10
           max-score: 5
-          setup-command: 'pip install -r requirements.txt'
-
+          setup-command: 'pip install -U google-genai'
+          
       - name: Gemini QA Feedback
         if: always() # Ensures it runs even if tests fail
-        id: geminifeedback # Give this a unique ID
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          pip install -U google-genai
           python .github/scripts/qa_feedback.py
 
       - name: Autograding Reporter
