@@ -20,7 +20,7 @@ jobs:
         continue-on-error: true
         run: pytest test_assignment.py
       - name: Gemini QA Feedback
-        if: steps.pytest.outcome == 'failure'
+        if: always() && (steps.pytest.outcome == 'failure' || steps.pytest.outcome == 'error')
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python .github/scripts/qa_feedback.py
