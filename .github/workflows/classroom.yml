@@ -31,8 +31,8 @@ jobs:
           max-score: 5
 
       - name: Autograding Reporter
-        uses: ./
+        uses: classroom-resources/autograding-grading-reporter@v1
         env:
-          GQASTEP-TEST_RESULTS: "${{steps.gqastep.outputs.result}}"
+          GQASTEP_RESULTS: "${{steps.gqastep.outputs.result}}"
         with:
           runners: gqastep
