@@ -1,3 +1,7 @@
+print("*****************************************")
+print("GEMINI SCRIPT IS NOW RUNNING")
+print("*****************************************")
+
 import os
 import google.generativeai as genai
 
