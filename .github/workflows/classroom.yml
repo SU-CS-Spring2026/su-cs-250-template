@@ -30,6 +30,15 @@ jobs:
           timeout: 30
           max-score: 5
 
+      - name: Debug Environment
+        run: |
+          echo "Checking Actor: ${{ github.actor }}"
+          # Note: GitHub automatically masks secrets with *** in logs
+          echo "API Key Length: ${#GEMINI_API_KEY}" 
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+
       - name: Autograding Reporter
         uses: education/autograding-grading-reporter@v1
         if: always()
