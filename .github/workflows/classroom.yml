@@ -19,19 +19,16 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Gemini Analysis
-        # We use the official 'command-grader' because it creates the 
-        # internal file the Reporter is hard-coded to find.
+      - name: Gemini QA
+        id: grader
         uses: education/autograding-command-grader@v1
-        id: geminirun
-        continue-on-error: true
         with:
-          test-name: 'Gemini QA Feedback'
+          test-name: 'Gemini Analysis'
           setup-command: 'python -m pip install -U google-genai'
-          # Use 'command', NOT 'python-command'
           command: 'python .github/scripts/qa_feedback.py'
-          timeout: 10
+          timeout: 15 # Increased timeout to give Gemini breathing room
           max-score: 5
+        # This MUST be aligned with 'with'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_ACTOR: ${{ github.actor }}
@@ -40,5 +37,4 @@ jobs:
         uses: education/autograding-grading-reporter@v1
         if: always()
         with:
-          # This MUST match the 'id' above
-          runners: geminirun
+          runners: grader
