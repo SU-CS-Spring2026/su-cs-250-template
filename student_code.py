@@ -1,7 +1,7 @@
 # Step 1: You will need the math library for the pi constant and sqrt function
 import math
 
-# Test Case: Code runs perfectly but prints NOTHING to stdout
+# Test Case: Code runs perfectly but prints NOTHING to stdout 
 def calculate_radius(diameter):
     radius = diameter / 2
     return radius
@@ -19,6 +19,7 @@ print(calculate_radius(10))
     # TODO: Calculate the radius given the area
     # Formula: radius = sqrt(area / pi)
     # pass
+
 
 
 
