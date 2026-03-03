@@ -32,7 +32,7 @@ jobs:
 
       - name: Gemini QA Feedback
         # This is the "magic" line that fixes your issue:
-        if: steps.autograder.outcome == 'failure' || steps.autograder.outcome == 'error'
+        if: always() && (steps.autograder.outcome == 'failure' || steps.autograder.outcome == 'error')
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python .github/scripts/qa_feedback.py
