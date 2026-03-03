@@ -25,8 +25,12 @@ jobs:
         with:
           test-name: 'Gemini Analysis'
           setup-command: 'pip install -r requirements.txt'
-          # We inject the env vars directly into the command string here
-          command: 'GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py'
+          # THE FIX: This wrapper captures the <score> tag from your Python script
+          command: |
+            OUTPUT=$(GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py)
+            echo "$OUTPUT"
+            SCORE=$(echo "$OUTPUT" | grep -oP '(?<=<score>).*(?=</score>)')
+            echo "::set-output name=score::$SCORE"
           timeout: 30
           max-score: 5
 
