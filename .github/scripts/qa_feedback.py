@@ -3,15 +3,14 @@ print("GEMINI SCRIPT IS NOW RUNNING")
 print("*****************************************")
 
 import os
-from google import genai  # Correct New SDK import
+import sys
+from google import genai  # Modern SDK
 
-# 1. Setup the Client
-# The new SDK uses a Client object. It automatically finds "GEMINI_API_KEY"
-# in your environment variables, so we don't need os.environ manually.
+# The Client automatically looks for GEMINI_API_KEY in environment variables
 client = genai.Client()
 
 def grade_submission():
-    # Read the student's actual code file
+    # Read the student's code
     try:
         with open("student_code.py", "r") as f:
             student_code = f.read()
@@ -19,20 +18,13 @@ def grade_submission():
         print("Error: student_code.py not found.")
         return
 
-    # 2. The Prompt for the AI
-    prompt = f"""
-    You are a QA Reviewer for the CS250 Python course. 
-    The student is working on a 'calculate_radius' function.
-    The student's code failed the tests. Identify the error without giving them the final code. 
-    Review this code:
-    {student_code}
-    """
+    # Prompt Logic
+    prompt = f"Review this Python code for a 'calculate_radius' function. Identify errors without giving the solution: {student_code}"
 
-    # 3. Generate Content using the Client
-    # We use 'gemini-2.5-flash' which is the current stable high-speed model.
+    # Using the current 2026 stable model
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.5-flash', # Or 'gemini-3-flash-preview'
             contents=prompt
         )
         print("\n--- QA FEEDBACK FROM GEMINI ---")
@@ -40,6 +32,7 @@ def grade_submission():
         print("-------------------------------\n")
     except Exception as e:
         print(f"Gemini API Error: {e}")
+        sys.exit(1) # This ensures you get a Red X if the AI fails
 
 if __name__ == "__main__":
     grade_submission()
