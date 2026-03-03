@@ -26,7 +26,7 @@ jobs:
         with:
           timeout: 10
           max-score: 5
-          setup-command: ''
+          setup-command: 'pip install pytest'
           
       - name: Gemini QA Feedback
         if: always() # Ensures it runs even if tests fail
@@ -36,8 +36,9 @@ jobs:
         run: |
           python -m pip install -U google-genai
           python .github/scripts/qa_feedback.py
+          
       - name: Autograding Reporter
-        uses: education/autograding-python-grader@v1
+        uses: education/autograding-grading-reporter@v1
         if: always()
         with:
           # Change this to geminifeedback
