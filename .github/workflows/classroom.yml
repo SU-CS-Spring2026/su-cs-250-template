@@ -34,11 +34,11 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          pip install -U google-genai
+          python -m pip install -U google-genai
           python .github/scripts/qa_feedback.py
 
       - name: Autograding Reporter
-        uses: education/autograding-grading-reporter@v1
+        uses: education/autograding-python-grader@v1
         if: always()
         with:
           # Change this to geminifeedback
