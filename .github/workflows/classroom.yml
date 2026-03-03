@@ -37,5 +37,5 @@ jobs:
         uses: education/autograding-grading-reporter@v1
         if: always()
         with:
-          # This MUST match the unique ID above
+          # This MUST exactly match the 'id' you gave the Gemini Analysis step 
           runners: saylorqacheck
