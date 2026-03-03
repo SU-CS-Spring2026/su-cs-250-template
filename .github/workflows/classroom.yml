@@ -37,7 +37,7 @@ jobs:
           python -m pip install -U google-genai
           python .github/scripts/qa_feedback.py
           # This ensures the buffer isn't empty, preventing the Node.js crash
-          echo "Points 5/5"
+          echo "Points 5/5"  
 
       - name: Autograding Reporter
         # CRITICAL: Use 'grading-reporter' to clear the "Unexpected input" warning
