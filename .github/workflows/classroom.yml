@@ -29,13 +29,14 @@ jobs:
           setup-command: ''
           
       - name: Gemini QA Feedback
-        if: always() # Ensures it runs even if tests fail
         id: geminifeedback
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: |
-          python -m pip install -U google-genai
-          python .github/scripts/qa_feedback.py
+        uses: education/autograding-python-grader@v1
+        if: always()
+        with:
+          timeout: 10
+          max-score: 5
+          setup-command: 'python -m pip install -U google-genai'
+          python-command: 'python .github/scripts/qa_feedback.py'
 
       - name: Autograding Reporter
         uses: education/autograding-python-grader@v1
