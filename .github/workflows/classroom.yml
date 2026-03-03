@@ -5,7 +5,7 @@ permissions:
   actions: read
   contents: read
 
-jobs:
+jobs: 
   build:
     name: Autograding
     runs-on: ubuntu-latest
