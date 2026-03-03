@@ -60,7 +60,7 @@ jobs:
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
         env:
-          # THE FIX: Construct the JSON string the reporter expects
+          # Constructing the JSON manually to avoid "" or binary junk
           GQASTEP_RESULTS: '{"totalPoints":${{ steps.gqastep.outputs.score }},"maxPoints":5}'
         with:
           runners: gqastep
