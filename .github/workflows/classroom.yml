@@ -20,17 +20,16 @@ jobs:
           python-version: '3.10'
 
       - name: Gemini Analysis
-        # We are using a unique ID to break any previous "undefined" cache
         id: saylorqacheck 
         uses: education/autograding-command-grader@v1
         with:
           test-name: 'Gemini Analysis'
           setup-command: 'python -m pip install -U google-genai'
-          # We use the full relative path explicitly
           command: 'python ./.github/scripts/qa_feedback.py'
-          timeout: 20
+          timeout: 21
           max-score: 5
         env:
+          # VITAL: Double check this is 'vars' and not 'secrets'
           GEMINI_API_KEY: ${{ vars.GEMINI_API_KEY }}
           GITHUB_ACTOR: ${{ github.actor }}
 
