@@ -29,24 +29,19 @@ jobs:
           setup-command: pip install pytest
           
       - name: Gemini QA Feedback
-        id: geminifeedback
-        # We use 'command-grader' because it is a "wrapper" that 
-        # creates the JSON file the Reporter needs to see.
-        uses: education/autograding-command-grader@v1
         if: always()
+        # Note: We do NOT give this an 'id' that the reporter uses.
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        with:
-          test-name: 'AI Feedback Loop'
-          setup-command: 'python -m pip install -U google-genai'
-          # This is where your script runs
-          command: 'python .github/scripts/qa_feedback.py'
-          timeout: 10
-          max-score: 5
-          
+        run: |
+          python -m pip install -U google-genai
+          python .github/scripts/qa_feedback.py
+
       - name: Autograding Reporter
         uses: education/autograding-grading-reporter@v1
         if: always()
         with:
-          # Change this to geminifeedback
-          runners: autograder,geminifeedback
+          # ONLY list the 'autograder'. 
+          # This tells the Reporter: "Don't try to score the Gemini step."
+          # This PREVENTS the "Received undefined" error.
+          runners: autograder
