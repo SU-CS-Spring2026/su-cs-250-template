@@ -31,7 +31,7 @@ jobs:
 
       - name: Gemini QA Feedback
         # This step runs if the autograder fails OR errors out
-        if: always() && (steps.autograder.outcome == 'failure' || steps.autograder.outcome == 'error')
+        if: always()
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
