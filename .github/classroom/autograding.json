@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Gemini Analysis",
+      "setup": "python -m pip install -U google-genai",
+      "run": "python ./.github/scripts/qa_feedback.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 5
+    }
+  ]
+}
