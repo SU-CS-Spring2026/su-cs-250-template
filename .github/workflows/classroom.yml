@@ -26,7 +26,7 @@ jobs:
           # Use 'setup-command' for your pip install
           setup-command: 'python -m pip install -U google-genai'
           # Use 'python-command', NOT 'command' or 'test-name'
-          python-command: 'python .github/scripts/qa_feedback.py'
+          command: 'python .github/scripts/qa_feedback.py'
           timeout: 10
           max-score: 5
         env:
