@@ -31,7 +31,7 @@ jobs:
           timeout: 20
           max-score: 5
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ vars.GEMINI_API_KEY }}
           GITHUB_ACTOR: ${{ github.actor }}
 
       - name: Autograding Reporter
