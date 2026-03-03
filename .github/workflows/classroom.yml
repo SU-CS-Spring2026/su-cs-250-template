@@ -1,11 +1,11 @@
 name: GitHub Classroom Workflow
 on: [push]
 permissions:
-  checks: write 
+  checks: write
   actions: read
-  contents: read
+  contents: write
 
-jobs: 
+jobs:
   build:
     name: Autograding
     runs-on: ubuntu-latest
@@ -32,11 +32,3 @@ jobs:
         if: always()
         with:
           runners: autograder
-
-      - name: Gemini QA Feedback
-        if: always() && (steps.autograder.outcome == 'failure' || steps.autograder.outcome == 'error')
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: |
-          pip install -U google-generativeai
-          python .github/scripts/qa_feedback.py
