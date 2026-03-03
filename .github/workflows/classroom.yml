@@ -30,7 +30,7 @@ jobs:
 
       - name: Gemini QA Feedback
         if: always() # Ensures it runs even if tests fail
-        id: gemini-feedback # Give this a unique ID
+        id: geminifeedback # Give this a unique ID
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
@@ -42,4 +42,4 @@ jobs:
         if: always()
         with:
           # Match these IDs exactly to the 'id:' lines in your previous steps
-          runners: autograder,gemini-feedback
+          runners: autograder,geminifeedback
