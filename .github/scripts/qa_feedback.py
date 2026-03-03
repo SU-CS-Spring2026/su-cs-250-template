@@ -1,10 +1,10 @@
-print("*****************************************")
-print("GEMINI SCRIPT IS NOW RUNNING")
-print("*****************************************")
-
 import os
 import sys
 from google import genai  # Modern SDK
+
+print("*****************************************")
+print("GEMINI SCRIPT IS NOW RUNNING")
+print("*****************************************")
 
 # The script looks for the name you used in the 'env:' section of your YAML
 api_key = os.getenv("GEMINI_API_KEY")
@@ -56,7 +56,6 @@ def grade_submission():
     sys.stdout.flush()
 
     # VITAL: Explicitly tell GitHub the script was 100% successful
-    import sys
     sys.exit(0)
 
 if __name__ == "__main__":
