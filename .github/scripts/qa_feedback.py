@@ -1,11 +1,37 @@
 import os
 import sys
+import subprocess
+import re
 from google import genai  # Modern SDK
 
 print("*****************************************")
 print("GEMINI SCRIPT IS NOW RUNNING")
 print("*****************************************")
 
+
+def sanitize_feedback(text):
+    if not text:
+        return ""
+    replacements = {
+        '\u202f': ' ', '\u00a0': ' ', '\u201c': '"', '\u201d': '"',
+        '\u2018': "'", '\u2019': "'", '\u2013': '-', '\u2014': '--',
+        '\u2026': '...'
+    }
+    for unicode_char, ascii_char in replacements.items():
+        text = text.replace(unicode_char, ascii_char)
+    
+    # The Safety Net: Removes remaining non-ASCII characters
+    text = re.sub(r'[^\x00-\x7f]', r'', text)
+    return text.strip()
+
+# 2. NEW FUNCTION: Place this right before grade_submission()
+def run_student_code(file_path):
+    try:
+        result = subprocess.run(['python3', file_path], capture_output=True, text=True, timeout=5)
+        return result.stdout, result.stderr
+    except Exception as e:
+        return "", str(e)
+        
 # The script looks for the name you used in the 'env:' section of your YAML
 api_key = os.getenv("GEMINI_API_KEY")
 
@@ -18,29 +44,42 @@ if not api_key:
 client = genai.Client(api_key=api_key)
 
 def grade_submission():
-    # Grab the student's GitHub username for your Redash/Excel reports
     student_id = os.getenv("GITHUB_ACTOR", "Unknown_Student")
+    
+    # FIX 1: Define the filename clearly so the script knows what to run
+    filename = "student_code.py" 
+
+    # EXECUTION STEP: Run the code before reading the file
+    stdout, stderr = run_student_code(filename)
     
     # Read the student's code
     try:
-        with open("student_code.py", "r") as f:
+        with open(filename, "r") as f:
             student_code = f.read()
     except FileNotFoundError:
-        print("Error: student_code.py not found.")
+        print(f"Error: {filename} not found.")
         return
 
     # Prompt Logic
-    prompt = f"You are a QA Reviewer. Student ID: {student_id}. Review this Python code for a 'calculate_radius' function. Identify errors without giving the solution. Be encouraging! {student_code}"
+    prompt = (
+        f"You are a QA Reviewer. Student ID: {student_id}. "
+        f"Review this Python code: {student_code}. "
+        f"\n\nACTUAL EXECUTION OUTPUT:\n{stdout}"
+        f"\n\nEXECUTION ERRORS:\n{stderr}"
+        "\nIdentify errors without giving the solution. Be encouraging!"
+    )
 
-    # Using the current 2026 stable model
     try:
         response = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=prompt
         )
-        # Clear markers for Stephanie to use when scraping data
+        
+        # FIX 2: Apply the sanitizer to the response text here
+        clean_text = sanitize_feedback(response.text)
+
         print(f"### DATA_START | STUDENT: {student_id} ###")
-        print(response.text)
+        print(clean_text)
         print(f"### DATA_END ###")
         
     except Exception as e:
