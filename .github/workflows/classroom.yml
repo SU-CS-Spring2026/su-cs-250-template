@@ -30,18 +30,20 @@ jobs:
           
       - name: Gemini QA Feedback
         id: geminifeedback
-        uses: education/autograding-python-grader@v1
+        # Use command-grader for custom scripts; it's more stable for this setup
+        uses: education/autograding-command-grader@v1
         if: always()
         with:
+          test-name: 'Gemini QA Analysis'
+          setup-command: 'python -m pip install -U google-genai'
+          # This command is the 'Source of Truth' for the reporter
+          command: 'python .github/scripts/qa_feedback.py'
           timeout: 10
           max-score: 5
-          # This is the "Magic" line: It installs AND runs in one go
-          setup-command: 'python -m pip install -U google-genai'
-          python-installer-bash: 'python .github/scripts/qa_feedback.py'
 
       - name: Autograding Reporter
         uses: education/autograding-grading-reporter@v1
         if: always()
         with:
-          # Only list the runner that actually has content
+          # Only list the runner that we know is producing a result
           runners: geminifeedback
