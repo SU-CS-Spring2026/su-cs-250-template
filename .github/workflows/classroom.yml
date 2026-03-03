@@ -20,24 +20,20 @@ jobs:
           python-version: '3.10'
 
       - name: Run Gemini Analysis
-        # We use the command-grader because it is the most stable "wrapper."
-        uses: education/autograding-python-grader@v1
         id: autograder
-        continue-on-error: true
+        uses: education/autograding-python-grader@v1
         with:
-          test-name: 'Gemini QA Feedback'
-          setup-command: 'python -m pip install -U google-genai.'
-          # Use 'command', NOT 'python-command'
-          command: 'python .github/scripts/qa_feedback.py'
+          # Use 'setup-command' for your pip install
+          setup-command: 'python -m pip install -U google-genai'
+          # Use 'python-command', NOT 'command' or 'test-name'
+          python-command: 'python .github/scripts/qa_feedback.py'
           timeout: 10
           max-score: 5
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Autograding Reporter
-        # This MUST be 'grading-reporter'
         uses: education/autograding-grading-reporter@v1
         if: always()
         with:
-          # ONLY list the ID that we defined above
           runners: autograder
