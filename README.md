@@ -32,7 +32,7 @@ After writing your logic, test it locally by running:
 When you are ready to be graded, run these three commands in order:
 
 ```git add student_code.py```  
-```git commit -m "Finished the case study logic" ```  
+```git commit -m "Finished the CS250 unit 5 assignment" ```  
 ```git push origin main```  
 
 ### ✅ Submission Checklist
