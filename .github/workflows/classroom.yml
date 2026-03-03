@@ -33,7 +33,7 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          pip install -U google-generativeai
+          pip install -U google-genai
           python .github/scripts/qa_feedback.py
 
       - name: Autograding Reporter
