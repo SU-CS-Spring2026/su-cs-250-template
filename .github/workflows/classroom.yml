@@ -1,16 +1,4 @@
 name: GitHub Classroom Workflow
-on: [push, pull_request] # Simplifies triggers for all branches
-
-permissions:
-  checks: write
-  actions: write
-  contents: write
-
-jobs:
-  build:
-    name: Autograding
-    runs-on: ubuntu-latest
- name: GitHub Classroom Workflow
 on: [push, pull_request]
 
 permissions:
