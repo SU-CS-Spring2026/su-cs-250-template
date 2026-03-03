@@ -1,47 +1,45 @@
-name: GitHub Classroom Autograding
+name: GitHub Classroom Workflow
+
 on: [push]
+
 permissions:
   checks: write
   actions: read
   contents: read
+
 jobs:
   build:
     name: Autograding
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest google-generativeai
-
       - name: Run Autograde Tests
         id: autograder
         uses: education/autograding-python-grader@v1
-        continue-on-error: true # <--- ADD THIS LINE
+        continue-on-error: true
         with:
           timeout: 10
           max-score: 5
           setup-command: 'pip install -r requirements.txt'
 
       - name: Gemini QA Feedback
-        # This is the "magic" line that fixes your issue:
-        # add ine
-        if: always() 
+        # This step runs if the autograder fails OR errors out
+        if: always() && (steps.autograder.outcome == 'failure' || steps.autograder.outcome == 'error')
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python .github/scripts/qa_feedback.py
+        run: |
+          pip install -U google-generativeai
+          python .github/scripts/qa_feedback.py
 
       - name: Autograding Reporter
         uses: education/autograding-grading-reporter@v1
-        if: always() # <--- This forces the reporter to report a 0 instead of crashing
-        env:
-          ANY_REQUIRED_ENV_VAR: ${{ secrets.ANY_REQUIRED_ENV_VAR }}
+        if: always()
         with:
           runners: autograder
