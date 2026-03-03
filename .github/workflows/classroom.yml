@@ -20,7 +20,7 @@ jobs:
           python-version: '3.10'
 
       - name: Gemini Analysis
-        id: geminirun # This is the "bucket" ID
+        id: geminirun # This is the "bucket" ID 
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_ACTOR: ${{ github.actor }}
