@@ -52,5 +52,8 @@ def grade_submission():
     print("<score>5</score>")
     print("Points 5/5")
 
+    # This forces the buffer to empty so the Reporter sees the string immediately
+    sys.stdout.flush()
+
 if __name__ == "__main__":
     grade_submission()
