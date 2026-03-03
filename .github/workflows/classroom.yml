@@ -42,4 +42,4 @@ jobs:
         if: always()
         with:
           # Match these IDs exactly to the 'id:' lines in your previous steps
-          runners: autograder,geminifeedback
+          runners: autograder
