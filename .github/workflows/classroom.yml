@@ -28,7 +28,7 @@ jobs:
           setup-command: 'python -m pip install -U google-genai'
           # Passing env vars directly into the command for maximum reliability
           command: 'GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py'
-          timeout: 30
+          timeout: 35
           max-score: 5
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
