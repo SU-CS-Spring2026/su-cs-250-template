@@ -3,11 +3,12 @@ print("GEMINI SCRIPT IS NOW RUNNING")
 print("*****************************************")
 
 import os
-from google import genai  # New import style
+from google import genai  # Correct New SDK import
 
-# Setup Gemini (Using the Secret we added to the Organization)
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-model = genai.GenerativeModel('gemini-2.5-flash')
+# 1. Setup the Client
+# The new SDK uses a Client object. It automatically finds "GEMINI_API_KEY"
+# in your environment variables, so we don't need os.environ manually.
+client = genai.Client()
 
 def grade_submission():
     # Read the student's actual code file
@@ -18,7 +19,7 @@ def grade_submission():
         print("Error: student_code.py not found.")
         return
 
-    # The Prompt for the AI
+    # 2. The Prompt for the AI
     prompt = f"""
     You are a QA Reviewer for the CS250 Python course. 
     The student is working on a 'calculate_radius' function.
@@ -27,11 +28,18 @@ def grade_submission():
     {student_code}
     """
 
-    # Ensure this line starts at the EXACT same column as 'prompt' above
-    response = model.generate_content(prompt)
-    print("\n--- QA FEEDBACK FROM GEMINI ---")
-    print(response.text)
-    print("-------------------------------\n")
+    # 3. Generate Content using the Client
+    # We use 'gemini-2.5-flash' which is the current stable high-speed model.
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
+        print("\n--- QA FEEDBACK FROM GEMINI ---")
+        print(response.text)
+        print("-------------------------------\n")
+    except Exception as e:
+        print(f"Gemini API Error: {e}")
 
 if __name__ == "__main__":
     grade_submission()
