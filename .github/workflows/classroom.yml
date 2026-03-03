@@ -25,11 +25,11 @@ jobs:
         with:
           test-name: 'Gemini Analysis'
           setup-command: 'python -m pip install -U google-genai'
-          command: 'python ./.github/scripts/qa_feedback.py'
-          timeout: 25
+          # We pass the env var directly into the python execution string
+          command: 'GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py'
+          timeout: 30
           max-score: 5
         env:
-          # VITAL: Double check this is 'vars' and not 'secrets'
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_ACTOR: ${{ github.actor }}
 
