@@ -21,7 +21,7 @@ jobs:
 
       - name: Gemini Analysis
         # We are using a unique ID to break any previous "undefined" cache
-        id: saylor_qa_check 
+        id: saylorqacheck 
         uses: education/autograding-command-grader@v1
         with:
           test-name: 'Gemini Analysis'
@@ -39,4 +39,4 @@ jobs:
         if: always()
         with:
           # This MUST match the unique ID above
-          runners: saylor_qa_check
+          runners: saylorqacheck
