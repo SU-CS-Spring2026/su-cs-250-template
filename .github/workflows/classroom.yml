@@ -31,12 +31,12 @@ jobs:
 
       - name: Autograding Reporter
         uses: education/autograding-grading-reporter@v1
-        if: always()  # <--- CRITICAL: Run this IMMEDIATELY after the tests
+        if: always()
         with:
           runners: autograder
 
       - name: Gemini QA Feedback
-        if: always()
+        if: always() && (steps.autograder.outcome == 'failure' || steps.autograder.outcome == 'error')
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
