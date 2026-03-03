@@ -14,18 +14,15 @@ def grade_submission():
         print("Error: student_code.py not found.")
         return
 
-prompt = f"""
+    # The Prompt for the AI
+    prompt = f"""
     You are a QA Reviewer for an MBA Python course. 
-    The student is working on a 'calculate_radius' function (where Area = pi * r^2).
-    
-    The student's code failed the automated tests. 
-    Review the code below and provide a concise, encouraging hint. 
-
-    Student Code:
+    The student is working on a 'calculate_radius' function.
+    The student's code failed the tests. Review this code:
     {student_code}
-    """  # <--- Make sure there is NO '}' after these quotes
+    """
 
-    # Generate and print feedback
+    # Ensure this line starts at the EXACT same column as 'prompt' above
     response = model.generate_content(prompt)
     print("\n--- QA FEEDBACK FROM GEMINI ---")
     print(response.text)
