@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Run Autograde Tests
+      - name: Run Autograde Tests 
         id: autograder
         uses: education/autograding-python-grader@v1
         continue-on-error: true
