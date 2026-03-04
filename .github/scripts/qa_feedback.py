@@ -76,7 +76,7 @@ def grade_submission():
         f"Review this Python code: {student_code}. "
         f"\n\nACTUAL EXECUTION OUTPUT:\n{stdout}"
         f"\n\nEXECUTION ERRORS:\n{stderr}"
-        "\nIdentify errors without giving the solution. Be encouraging!"
+        f"\nIdentify errors without giving the solution. Be encouraging!"
     )
 
     try:
