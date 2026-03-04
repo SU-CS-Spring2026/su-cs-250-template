@@ -95,7 +95,7 @@ def grade_submission():
         print(f"Gemini API Error for {student_id}: {e}")
         sys.exit(1)
 
-    # 3. REPORTER HANDSHAKE: Now dynamically using current_score
+    # 3. REPORTER HANDSHAKE: Now dynamically using current_scoree
     print(f"\n<score-threshold>5</score-threshold>")
     print(f"<score>{current_score}</score>")
     print(f"Points {current_score}/5")
