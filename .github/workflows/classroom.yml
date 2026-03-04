@@ -26,12 +26,13 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
         run: |
           pip install -r requirements.txt
-          # 1. Run script and save to file
+          # 1. Run script and save to file to isolate logs
           python ./.github/scripts/qa_feedback.py > full_log.txt
           cat full_log.txt
           
           # 2. Extract ONLY the numeric score (3, 4, 5)
-          # 'tr -dc 0-9' removes the binary junk tokens ()
+          # 'tr -dc 0-9' deletes every single character that IS NOT a number.
+          # This nukes the binary junk tokens () completely.
           SCORE=$(grep -oP '(?<=<score>).*(?=</score>)' full_log.txt | tr -dc '0-9')
           echo "score=$SCORE" >> $GITHUB_OUTPUT
           
@@ -45,8 +46,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: 'Gemini Analysis'
-          # This command always 'passes' so the workflow keeps moving
-          command: "echo 'Gemini analysis complete.'"
+          command: "echo 'Points extracted from runner step.'"
           timeout: 10
           max-score: 5
 
@@ -60,8 +60,8 @@ jobs:
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
         env:
-          # THE FIX: We ignore the 'gqastep' output and use our CLEAN 'gqa_exec' score.
-          # This manually overrides the 5/5 to show the REAL score (e.g., 3/5).
+          # THE FIX: Construct the JSON using the SCRUBBED numeric score only.
+          # This prevents the Reporter from "sniffing" the binary junk in the logs.
           GQASTEP_RESULTS: '{"totalPoints":${{ steps.gqaexec.outputs.score }},"maxPoints":5}'
         with:
           runners: gqastep
