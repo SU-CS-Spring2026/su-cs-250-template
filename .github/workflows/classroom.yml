@@ -25,50 +25,32 @@ jobs:
         with:
           test-name: 'Gemini Analysis'
           setup-command: 'pip install -r requirements.txt'
-          command: |
-            # 1. Run the script and capture output
-            OUTPUT=$(GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py)
-            echo "$OUTPUT"
-            
-            # 2. Extract score and write to modern $GITHUB_OUTPUT
-            SCORE=$(echo "$OUTPUT" | grep -oP '(?<=<score>).*(?=</score>)')
-            echo "score=$SCORE" >> $GITHUB_OUTPUT
-            
-            # 3. Save the full result for the Filter step
-            echo "result<<EOF" >> $GITHUB_OUTPUT
-            echo "$OUTPUT" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+          # We inject the env vars directly into the command string here
+          command: 'GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py'
           timeout: 30
           max-score: 5
-
-      - name: Extract Clean Score
-        id: score_fix
-        run: |
-          # 'tr -dc' deletes everything that IS NOT a number (0-9).
-          # This nukes the binary junk tokens () entirely.
-          CLEAN_SCORE=$(echo "${{ steps.gqastep.outputs.score }}" | tr -dc '0-9')
-          echo "final_score=$CLEAN_SCORE" >> $GITHUB_OUTPUT
 
       - name: Filter Feedback
         id: filter
         run: |
-          # Extract only the encouraging notes for the student
+          # Use sed to grab everything between the DATA markers
           FEEDBACK=$(echo "${{ steps.gqastep.outputs.result }}" | sed -n '/### DATA_START/,/### DATA_END/p' | sed '1d;$d')
+          
+          # This saves it so the next step can see it
           echo "clean_msg<<EOF" >> $GITHUB_OUTPUT
           echo "$FEEDBACK" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-
       - name: Post Feedback to PR
         uses: mshick/add-pr-comment@v2
         with:
           message-id: gemini-feedback
+          # Now we use the clean output from the filter step
           message: "${{ steps.filter.outputs.clean_msg }}"
           allow-repeats: true
 
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
         env:
-          # Point the reporter to the DECONTAMINATED final_score
-          GQASTEP_RESULTS: '{"totalPoints":${{ steps.score_fix.outputs.final_score }},"maxPoints":5}'
+          GQASTEP_RESULTS: "${{steps.gqastep.outputs.result}}"
         with:
           runners: gqastep
