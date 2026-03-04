@@ -101,7 +101,7 @@ def grade_submission():
     print(f"Points {current_score}/5
     print(f"Hello World")
 
-    # This forces the buffer to empty so the Reporter sees the string immediately
+    # This forces the buffer to empty so the Reporter sees the string immediatelyy
     sys.stdout.flush()
 
     # VITAL: Explicitly tell GitHub the script was 100% successful
