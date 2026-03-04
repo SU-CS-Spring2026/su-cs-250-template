@@ -62,5 +62,5 @@ jobs:
           # This disconnects it from the 'internal_grader_step' logs.
           GQA-EXEC_RESULTS: '${{"totalPoints":${{ steps.gqa-exec.outputs.score}},"maxPoints":5}}
         with:
-          # We tell the reporter to look for this specific name
+          # We tell the reporter to look for this specific name 
           runners: gqa-exec
