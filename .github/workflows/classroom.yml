@@ -26,42 +26,41 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
         run: |
           pip install -r requirements.txt
-          # 1. Run script and save to file to isolate logs
+          # Run script and save to file
           python ./.github/scripts/qa_feedback.py > full_log.txt
           cat full_log.txt
           
-          # 2. Extract ONLY the numeric score (3, 4, 5)
-          # 'tr -dc 0-9' deletes every single character that IS NOT a number.
-          # This nukes the binary junk tokens () completely.
-          SCORE=$(grep -oP '(?<=<score>).*(?=</score>)' full_log.txt | tr -dc '0-9')
+          # Extract ONLY the number. tr -dc '0-9' kills the binary junk.
+          SCORE=$(grep -oP '(?<=<score>).*(?=</score>)' full_log.txt | tr -dc '0-9' || echo "0")
           echo "score=$SCORE" >> $GITHUB_OUTPUT
           
-          # 3. Extract CLEAN feedback for the PR
+          # Extract CLEAN feedback
           echo "feedback<<EOF" >> $GITHUB_OUTPUT
           sed -n '/### DATA_START/,/### DATA_END/p' full_log.txt | sed '1d;$d' >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Gemini Analysis
-        id: gqastep
+        id: internalgraderstep
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: 'Gemini Analysis'
-          command: "echo 'Points extracted from runner step.'"
-          timeout: 10
+          command: "echo 'Handing off to reporter...'"
+          timeout: 30
           max-score: 5
 
       - name: Post Feedback to PR
         uses: mshick/add-pr-comment@v2
         with:
-          message-id: gemini-feedback
+          message-id: geminifeedback
           message: "${{ steps.gqaexec.outputs.feedback }}"
           allow-repeats: true
 
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
         env:
-          # THE FIX: Construct the JSON using the SCRUBBED numeric score only.
-          # This prevents the Reporter from "sniffing" the binary junk in the logs.
-          GQASTEP_RESULTS: '{"totalPoints":${{ steps.gqaexec.outputs.score }},"maxPoints":5}'
+          # THE FIX: We name the environment variable 'GEMINI_ANALYSIS_RESULTS'
+          # This disconnects it from the 'internal_grader_step' logs.
+          GEMINI_ANALYSIS_RESULTS: '{"totalPoints":${{ steps.gqaexec.outputs.score }},"maxPoints":5}'
         with:
-          runners: gqastep
+          # We tell the reporter to look for this specific name
+          runners: geminianalysis
