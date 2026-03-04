@@ -63,4 +63,4 @@ jobs:
           GEMINI_ANALYSIS_RESULTS: '{"totalPoints":${{ steps.gqaexec.outputs.score }},"maxPoints":5}'
         with:
           # We tell the reporter to look for this specific name
-          runners: geminianalysis
+          runners: gemini_analysis
