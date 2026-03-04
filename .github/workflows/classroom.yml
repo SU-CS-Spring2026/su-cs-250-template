@@ -25,12 +25,8 @@ jobs:
         with:
           test-name: 'Gemini Analysis'
           setup-command: 'pip install -r requirements.txt'
-          # THE FIX: This wrapper captures the <score> tag from your Python script
-          command: |
-            OUTPUT=$(GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py)
-            echo "$OUTPUT"
-            SCORE=$(echo "$OUTPUT" | grep -oP '(?<=<score>).*(?=</score>)')
-            echo "::set-output name=score::$SCORE"
+          # We inject the env vars directly into the command string here
+          command: 'GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py'
           timeout: 30
           max-score: 5
 
@@ -44,6 +40,7 @@ jobs:
           echo "clean_msg<<EOF" >> $GITHUB_OUTPUT
           echo "$FEEDBACK" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+          
       - name: Post Feedback to PR
         uses: mshick/add-pr-comment@v2
         with:
