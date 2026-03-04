@@ -60,7 +60,7 @@ jobs:
         env:
           # THE FIX: We name the environment variable 'GEMINI_ANALYSIS_RESULTS'
           # This disconnects it from the 'internal_grader_step' logs.
-          GEMINI_ANALYSIS_RESULTS: '{"totalPoints":${{ steps.gqaexec.outputs.score }},"maxPoints":5}'
+          GEMINI-ANALYSIS_RESULTS: '{"totalPoints":${{ steps.gqaexec.outputs.score }},"maxPoints":5}'
         with:
           # We tell the reporter to look for this specific name
           runners: gemini-analysis
