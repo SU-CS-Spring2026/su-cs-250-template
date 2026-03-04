@@ -19,22 +19,23 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Run Analysis
+      - name: Run Gemini Analysis
         id: gqaexec
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: |
           pip install -r requirements.txt
-          # Run script and save to a file
+          # 1. Run script and save to file
           python ./.github/scripts/qa_feedback.py > full_log.txt
           cat full_log.txt
           
-          # Extract ONLY the score
-          SCORE=$(grep -oP '(?<=<score>).*(?=</score>)' full_log.txt)
+          # 2. Extract ONLY the numeric score (3, 4, 5)
+          # 'tr -dc 0-9' removes the binary junk tokens ()
+          SCORE=$(grep -oP '(?<=<score>).*(?=</score>)' full_log.txt | tr -dc '0-9')
           echo "score=$SCORE" >> $GITHUB_OUTPUT
           
-          # Extract ONLY the feedback for the PR
+          # 3. Extract CLEAN feedback for the PR
           echo "feedback<<EOF" >> $GITHUB_OUTPUT
           sed -n '/### DATA_START/,/### DATA_END/p' full_log.txt | sed '1d;$d' >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -44,12 +45,10 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: 'Gemini Analysis'
-          # This command ALWAYS succeeds, but reports the points we found
-          command: "echo 'Points earned: ${{ steps.gqaexec.outputs.score }}'"
+          # This command always 'passes' so the workflow keeps moving
+          command: "echo 'Gemini analysis complete.'"
           timeout: 10
           max-score: 5
-          # THIS IS THE KEY: We force the grader to use our extracted score
-          points: ${{ steps.gqaexec.outputs.score }}
 
       - name: Post Feedback to PR
         uses: mshick/add-pr-comment@v2
@@ -61,7 +60,8 @@ jobs:
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
         env:
-          # Handshake with the reporter
-          GQASTEP_RESULTS: '{"totalPoints":${{ steps.gqastep.outputs.score }},"maxPoints":5}'
+          # THE FIX: We ignore the 'gqastep' output and use our CLEAN 'gqa_exec' score.
+          # This manually overrides the 5/5 to show the REAL score (e.g., 3/5).
+          GQASTEP_RESULTS: '{"totalPoints":${{ steps.gqaexec.outputs.score }},"maxPoints":5}'
         with:
           runners: gqastep
