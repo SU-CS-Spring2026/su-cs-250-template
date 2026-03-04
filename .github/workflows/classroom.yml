@@ -20,7 +20,7 @@ jobs:
           python-version: '3.10'
 
       - name: Run Gemini Analysis
-        id: gqaexec
+        id: gqa-exec
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_ACTOR: ${{ github.actor }}
@@ -52,7 +52,7 @@ jobs:
         uses: mshick/add-pr-comment@v2
         with:
           message-id: geminifeedback
-          message: "${{ steps.gqaexec.outputs.feedback }}"
+          message: "${{ steps.gqa-exec.outputs.feedback }}"
           allow-repeats: true
 
       - name: Autograding Reporter
@@ -60,7 +60,7 @@ jobs:
         env:
           # THE FIX: We name the environment variable 'GEMINI_ANALYSIS_RESULTS'
           # This disconnects it from the 'internal_grader_step' logs.
-          GEMINI_ANALYSIS_RESULTS: '{"totalPoints":${{ steps.gqaexec.outputs.score }},"maxPoints":5}'
+          GQA-EXEC_RESULTS: '{"totalPoints":${{ steps.gqa-exec.outputs.score }},"maxPoints":5}'
         with:
           # We tell the reporter to look for this specific name
-          runners: gemini-analysis
+          runners: gqa-exec
