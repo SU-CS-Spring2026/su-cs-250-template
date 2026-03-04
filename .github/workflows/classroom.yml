@@ -44,7 +44,8 @@ jobs:
       - name: Extract Clean Score
         id: score_fix
         run: |
-          # Grab only the digits to avoid the "" or "Z" binary junk
+          # 'tr -dc' deletes everything that IS NOT a number (0-9).
+          # This nukes the binary junk tokens () entirely.
           CLEAN_SCORE=$(echo "${{ steps.gqastep.outputs.score }}" | tr -dc '0-9')
           echo "final_score=$CLEAN_SCORE" >> $GITHUB_OUTPUT
 
