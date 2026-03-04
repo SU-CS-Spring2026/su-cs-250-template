@@ -98,7 +98,8 @@ def grade_submission():
     # 3. REPORTER HANDSHAKE: Now dynamically using current_score
     print(f"\n<score-threshold>5</score-threshold>")
     print(f"<score>{current_score}</score>")
-    print(f"Points {current_score}/5")
+    print(f"Points {current_score}/5
+    print(f"Hello World")
 
     # This forces the buffer to empty so the Reporter sees the string immediately
     sys.stdout.flush()
