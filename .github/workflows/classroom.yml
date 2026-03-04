@@ -26,7 +26,7 @@ jobs:
           test-name: 'Gemini Analysis'
           setup-command: 'pip install -r requirements.txt'
           command: |
-            # 1. Run the script and capture the output
+            # 1. Run the script and capture output
             OUTPUT=$(GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py)
             echo "$OUTPUT"
             
@@ -40,6 +40,13 @@ jobs:
             echo "EOF" >> $GITHUB_OUTPUT
           timeout: 30
           max-score: 5
+
+      - name: Extract Clean Score
+        id: score_fix
+        run: |
+          # Grab only the digits to avoid the "" or "Z" binary junk
+          CLEAN_SCORE=$(echo "${{ steps.gqastep.outputs.score }}" | tr -dc '0-9')
+          echo "final_score=$CLEAN_SCORE" >> $GITHUB_OUTPUT
 
       - name: Filter Feedback
         id: filter
@@ -60,8 +67,7 @@ jobs:
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
         env:
-          # THE FIX: We are using 'outputs.score' (the number) 
-          # NOT 'outputs.result' (the messy log with the  characters)
-          GQASTEP_RESULTS: '{"totalPoints":${{ steps.gqastep.outputs.score }},"maxPoints":5}'
+          # Point the reporter to the DECONTAMINATED final_score
+          GQASTEP_RESULTS: '{"totalPoints":${{ steps.score_fix.outputs.final_score }},"maxPoints":5}'
         with:
           runners: gqastep
