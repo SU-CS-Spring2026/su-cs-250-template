@@ -19,48 +19,42 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Run Gemini Analysis
-        id: gqa-exec
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_ACTOR: ${{ github.actor }}
-        run: |
-          pip install -r requirements.txt
-          # Run script and save to file
-          python ./.github/scripts/qa_feedback.py > full_log.txt
-          cat full_log.txt
-          
-          # Extract ONLY the number. tr -dc '0-9' kills the binary junk.
-          SCORE=$(grep -oP '(?<=<score>).*(?=</score>)' full_log.txt | tr -dc '0-9' || echo "0")
-          echo "score=$SCORE" >> $GITHUB_OUTPUT
-          
-          # Extract CLEAN feedback
-          echo "feedback<<EOF" >> $GITHUB_OUTPUT
-          sed -n '/### DATA_START/,/### DATA_END/p' full_log.txt | sed '1d;$d' >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
       - name: Gemini Analysis
-        id: internalgraderstep
+        id: gqastep
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: 'Gemini Analysis'
-          command: "echo 'Handing off to reporter...'"
+          setup-command: 'pip install -r requirements.txt'
+          # THE FIX: This wrapper captures the <score> tag from your Python script
+          command: |
+            OUTPUT=$(GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} GITHUB_ACTOR=${{ github.actor }} python ./.github/scripts/qa_feedback.py)
+            echo "$OUTPUT"
+            SCORE=$(echo "$OUTPUT" | grep -oP '(?<=<score>).*(?=</score>)')
+            echo "::set-output name=score::$SCORE"
           timeout: 30
           max-score: 5
 
+      - name: Filter Feedback
+        id: filter
+        run: |
+          # Use sed to grab everything between the DATA markers
+          FEEDBACK=$(echo "${{ steps.gqastep.outputs.result }}" | sed -n '/### DATA_START/,/### DATA_END/p' | sed '1d;$d')
+          
+          # This saves it so the next step can see it
+          echo "clean_msg<<EOF" >> $GITHUB_OUTPUT
+          echo "$FEEDBACK" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
       - name: Post Feedback to PR
         uses: mshick/add-pr-comment@v2
         with:
-          message-id: geminifeedback
-          message: "${{ steps.gqa-exec.outputs.feedback }}"
+          message-id: gemini-feedback
+          # Now we use the clean output from the filter step
+          message: "${{ steps.filter.outputs.clean_msg }}"
           allow-repeats: true
 
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
         env:
-          # THE FIX: We name the environment variable 'GEMINI_ANALYSIS_RESULTS.'
-          # This disconnects it from the 'internal_grader_step' logs.
-          GQA-EXEC_RESULTS: '{"totalPoints":${{ steps.gqa-exec.outputs.score}},"maxPoints":5}'
+          GQASTEP_RESULTS: "${{steps.gqastep.outputs.result}}"
         with:
-          # We tell the reporter to look for this specific name 
-          runners: gqa-exec
+          runners: gqastep
